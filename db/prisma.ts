@@ -4,10 +4,11 @@ import { PrismaClient } from '@prisma/client';
 import ws from 'ws';
 
 neonConfig.webSocketConstructor = ws;
+const connectionString = `${process.env.DATABASE_URL}`;
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-// const adapter = new PrismaNeon(pool);
-export const prisma = new PrismaClient().$extends({
+const adapter = new PrismaNeon({ connectionString });
+
+export const prisma = new PrismaClient({ adapter }).$extends({
 	result: {
 		product: {
 			price: {
