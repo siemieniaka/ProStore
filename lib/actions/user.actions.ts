@@ -5,7 +5,6 @@ import {
 	signInFormSchema,
 	signUpFormSchema,
 	paymentMethodSchema,
-	insertOrderSchema,
 } from '../validators';
 import { auth, signIn, signOut } from '@/auth';
 import { isRedirectError } from 'next/dist/client/components/redirect-error';
@@ -135,30 +134,6 @@ export async function updateUserPaymentMethod(
 			},
 		});
 		return { success: true, message: 'User updated successfully' };
-	} catch (error) {
-		return { success: false, message: formatError(error) };
-	}
-}
-
-// Place order?
-export async function placeOrder(data: z.infer<typeof insertOrderSchema>) {
-	try {
-		const session = await auth();
-		const currentUser = await prisma.user.findFirst({
-			where: { id: session?.user?.id },
-		});
-		if (!currentUser) throw new Error('User not found');
-
-		const order = insertOrderSchema.parse(data);
-		await prisma.user.update({
-			where: {
-				id: currentUser.id,
-			},
-			data: {
-				order: order.type,
-			},
-		});
-		return { success: true, message: 'Order placed successfully' };
 	} catch (error) {
 		return { success: false, message: formatError(error) };
 	}
